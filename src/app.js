@@ -18,6 +18,7 @@ const morganOption = (NODE_ENV === 'production')
 app.use(morgan(morganOption));
 app.use(helmet());
 app.use(cors());
+app.use(express.json());
 
 //test endpoint
 app.get('/test', (req, res) => {
@@ -47,6 +48,66 @@ app.get('/address', (req, res) => {
 
 //POST address endpoint
 app.post('/address', (req, res) => {
+    //set request to appropriate variables
+    const {firstName, lastName, address1, address2=false, city, state, zip}= req.body;
+    
+    //VALIDATION
+    //check if first name
+    if(!firstName){
+        res
+            .status(400)
+            .send('address must include a first name')
+    }
+    //check if last name
+    if(!lastName){
+        res
+            .status(400)
+            .send('address must include a last name')
+    }
+    //check if address1
+    if(!address1){
+        res
+            .status(400)
+            .send('address must include an address1 line')
+    }
+    //check if city
+    if(!city){
+        res
+            .status(400)
+            .send('address must include a city')
+    }
+    //check if state
+    if(!state){
+        res
+            .status(400)
+            .send('address must include a state')
+    }
+    //check if zip
+    if(!zip){
+        res
+            .status(400)
+            .send('address must include a zip')
+    }
+    //check if state is 2 characters
+    if(state.length !== 2) {
+        res
+            .status(400)
+            .send('state must have exactly 2 characters')
+    }
+    //check if zip is a number
+    if(isNaN(zip)){
+        res
+            .status(400)
+            .send('zip must be a number')
+    }
+    //check is zip is 5 digits
+    if(zip.toString().length !== 5){
+        res
+            .status(400)
+            .send('zip must be 5 digits long')
+    }
+
+    res.send('Posted');
     
 })
 
