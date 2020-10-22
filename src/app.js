@@ -39,15 +39,34 @@ const addresses = [
 
     }
 ]
+
+//Bearer Token Validator
+function validateBearerToken(req, res, next){
+    //get api token from .env file
+    const apiToken = process.env.API_TOKEN;
+    //get authorization header from api request
+    const authToken = req.get('Authorization');
+
+    //validate there was an authorization header and it matches api token
+    if(!authToken || authToken.split(' ')[1] !== apiToken) {
+        return res
+            .status(401)
+            .json({error: 'Unauthorized request'})
+    }
+
+    next();
+}
+
 //GET address endpoint
-app.get('/address', (req, res) => {
+function handleGetAddress(req, res){
     res
         .status(200)
         .json(addresses);
-});
+}
+app.get('/address', handleGetAddress);
 
 //POST address endpoint
-app.post('/address', (req, res) => {
+function handlesPostAddress(req, res) {
     //set request to appropriate variables
     const {firstName, lastName, address1, address2=false, city, state, zip}= req.body;
     
@@ -128,11 +147,11 @@ app.post('/address', (req, res) => {
         .status(201)
         .send(addresses[index]);
     
-})
+}
+app.post('/address', validateBearerToken, handlesPostAddress);
 
 //DELETE /address endpoint
-
-app.delete('/address/:addressId', (req, res) => {
+function handleDeleteAddress(req, res) {
     const { addressId } = req.params;
 
     console.log(addressId);
@@ -153,7 +172,9 @@ app.delete('/address/:addressId', (req, res) => {
         .status(204)
         .end();
 
-})
+}
+app.delete('/address/:addressId', validateBearerToken, handleDeleteAddress);
+
 
 //error handler
 app.use(function errorHandler(error, req, res, next) {
