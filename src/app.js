@@ -130,6 +130,31 @@ app.post('/address', (req, res) => {
     
 })
 
+//DELETE /address endpoint
+
+app.delete('/address/:addressId', (req, res) => {
+    const { addressId } = req.params;
+
+    console.log(addressId);
+
+    //validate id
+    const index = addresses.findIndex(curr => curr.id === addressId);
+    if(index === -1){
+        return res
+            .status(404)
+            .send('Address not found')
+    }
+
+    //delete address
+    addresses.splice(index, 1);
+
+    //send response
+    res
+        .status(204)
+        .end();
+
+})
+
 //error handler
 app.use(function errorHandler(error, req, res, next) {
     let response
