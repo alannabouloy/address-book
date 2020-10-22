@@ -5,7 +5,7 @@ const morgan = require('morgan');
 const cors = require('cors');
 const helmet = require('helmet');
 const { NODE_ENV } = require('./config');
-const uuid = require('uuid');
+const {v4: uuid} = require('uuid');
 
 //set up the app
 const app = express();
@@ -107,7 +107,26 @@ app.post('/address', (req, res) => {
             .send('zip must be 5 digits long')
     }
 
-    res.send('Posted');
+    const id = uuid();
+
+    addresses.push(
+        {
+            id,
+            firstName,
+            lastName,
+            address1,
+            address2,
+            city,
+            state,
+            zip
+        }
+    );
+
+    const index = addresses.findIndex(curr => curr.id == id);
+
+    res
+        .status(201)
+        .send(addresses[index]);
     
 })
 
